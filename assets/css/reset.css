@@ -1,0 +1,33 @@
+* {
+    margin: 0px;
+    padding: 0px;
+    box-sizing: border-box;
+}
+
+.weather-header {
+    background-image: linear-gradient(to right, #3360B9, #210B4E);
+}
+
+.form .input-group-append #search-button {
+    background-color: #5098E6;
+    border-radius: 5px;
+    margin-top: 10px;
+    color: white;
+    font-size: 12px;
+}
+
+.weather-hr {
+    color: #313030;
+}
+
+
+.list-group ul li
+{
+ color: #1A1A1A;
+ background-color: #AEAEAE;
+ list-style-type: none;
+margin-bottom:10px;
+border-radius: 5px;
+text-align: center;
+
+}
