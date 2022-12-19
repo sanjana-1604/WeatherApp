@@ -1,7 +1,5 @@
 
 const APIKey = "1dbeb6b1acf4bd3d58c4421632df6a4e";
-let cityArr = []
-let cityHistoryArr = localStorage.getItem("city")
 const searchBtn = $(".search-button")
 const inputSearchBox = $(".weather-search")
 const cityList = $(".list-group")
@@ -9,19 +7,23 @@ const todaySection = $("#today")
 ul = $("<ul>")
 
 
-function getStoredData()
-{
-    
+function getStoredData() {
+    let tempArr = []
+    let cityHistoryArr = localStorage.getItem("city")
+
+    if (cityHistoryArr) {
+        tempArr = cityHistoryArr.split(",")
+    }
+    return tempArr
 }
 
 
 /*FUnction to display city search history */
 function getCitySearchHistory() {
-    let li    
-    let tempArr = []
+    let li
+    let tempArr = getStoredData()
 
-    if (cityHistoryArr) {
-        tempArr = cityHistoryArr.split(",")
+    if (tempArr.length) {
         for (city of tempArr) {
             li = $('<li>').text(city)
             li.addClass("list-group-item")
@@ -39,7 +41,7 @@ loginPage()
 //Search button click handled here
 searchBtn.click(function (event) {
     event.preventDefault()
-    getCityLonLat(inputSearchBox.val())
+    getCityLonLat(inputSearchBox.val().toLowerCase())
 })
 
 //This function create first entry for the city list
@@ -53,31 +55,27 @@ function initScreen(cityName) {
 
 /*This function takes city name from input and pass Longitude and Latitude to find weather conditions */
 function getCityLonLat(cityName) {
-    let tempArr = []
    
+    let tempArr = getStoredData()
+    let cityArr = []
     $.get(`https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${APIKey}`)
         .then(function (data) {
-
             if (data.length) {
-              //  let cityHistoryArr = localStorage.getItem("city")
-console.log(cityHistoryArr)
-                if (!cityHistoryArr) {
+
+                if (!tempArr.length) {
                     tempArr.push(cityName)
+                    cityArr = tempArr
                 }
                 else {
-                    cityArr = cityHistoryArr.split(",")
-
-                    if (!cityArr.includes(cityName)) {                       
-                        for (city of cityArr) {
-                            tempArr.push(city)
+                    if (!tempArr.includes(cityName)) {
+                        for (city of tempArr) {
+                            cityArr.push(city)
                         }
-                        tempArr.push(cityName)
+                        cityArr.push(cityName)
                     }
                 }
-                if (tempArr.length) {
-                   
-                    localStorage.setItem("city", tempArr)
-                    cityHistoryArr = localStorage.getItem("city")
+                if (cityArr.length) {
+                    localStorage.setItem("city", cityArr)
                     initScreen(cityName)
                 }
                 inputSearchBox.val("")
@@ -106,10 +104,10 @@ function createHeading(cityName) {
 
 }
 
-function loginPage()
-{
+function loginPage() {
+    let tempArr = getStoredData()
     getCitySearchHistory()
-    if(!cityHistoryArr)
+    if(!tempArr.length)
     createHeading("Please enter a city")
     else
     {
