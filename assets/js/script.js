@@ -22,7 +22,6 @@ function getStoredData() {
 function getCitySearchHistory() {
     let li
     let tempArr = getStoredData()
-
     if (tempArr.length) {
         for (city of tempArr) {
             li = $('<li>').text(city)
@@ -55,13 +54,13 @@ function initScreen(cityName) {
 
 /*This function takes city name from input and pass Longitude and Latitude to find weather conditions */
 function getCityLonLat(cityName) {
-   
+
     let tempArr = getStoredData()
     let cityArr = []
     $.get(`https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${APIKey}`)
         .then(function (data) {
             if (data.length) {
-
+                console.log(data)
                 if (!tempArr.length) {
                     tempArr.push(cityName)
                     cityArr = tempArr
@@ -92,25 +91,68 @@ function getCityLonLat(cityName) {
 
 /* Function to get weather conditions using longitude and Latitude */
 function getCityWeather(lon, lat) {
-    $.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${APIKey}`)
+    $.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${APIKey}`)
         .then(function (data) {
-            createHeading(data.name)
+            console.log(data)
+            createHeading(data)
         })
 }
 
-function createHeading(cityName) {
-    let h4 = $("<h4>").text(cityName)
-    todaySection.append(h4)
+function createHeading(data) {
+
+    let h4 = $("<h4>")
+    let todayDate = $("<h4>")
+    let forcastImg = $("<img>")
+    let tempP = $("<p>")
+    let humidityP = $("<p>")
+    let windP = $("<p>")
+    todayDate.addClass("todayDate")
+    h4.addClass("locationName")
+    forcastImg.addClass("forcastImg")
+    tempP.addClass("todayTemp")
+    windP.addClass("todayWind")
+    humidityP.addClass("todayHumidity")
+    if (data) {
+        updateData(data, h4, todayDate, forcastImg, tempP, humidityP, windP)
+    }
+
 
 }
+function updateData(data, h4, todayDate, forcastImg, tempP, humidityP, windP) {
+    let date = moment().format('DD/MM/YYYY')
+    let tempInCelsius = Math.ceil(data.main.temp)
+    let windSpeed = (data.wind.speed * 2.23694).toFixed(1)
+    
+    todayDate.text(`(${date})`)
+
+    h4.text(data.name)
+    todaySection.append(h4)
+    todaySection.append(todayDate)
+
+    forcastImg.attr('src', `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`)
+    todaySection.append(forcastImg)
+
+    tempP.text(`Temp: ${tempInCelsius}\xB0C`)
+    todaySection.append(tempP)
+
+    windP.text(`Wind: ${windSpeed} KPH`)
+    todaySection.append(windP)
+
+    humidityP.text(`Humidity: ${data.main.humidity}%`)
+    todaySection.append(humidityP)
+}
+
 
 function loginPage() {
+    let h4 = $("<h4>")
     let tempArr = getStoredData()
+    console.log(tempArr)
     getCitySearchHistory()
-    if(!tempArr.length)
-    createHeading("Please enter a city")
-    else
-    {
+    if (!tempArr.length) {
+        h4.text("Please enter city to search")
+        todaySection.append(h4)
+    }
+    else {
 
     }
 

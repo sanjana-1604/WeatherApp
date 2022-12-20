@@ -31,3 +31,13 @@ border-radius: 5px;
 text-align: center;
 
 }
+.locationName
+{
+    display:inline-block;  
+}
+.todayDate
+{
+    display:inline-block;    
+    margin:10px;
+    text-align:left;
+}
