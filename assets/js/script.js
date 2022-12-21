@@ -4,7 +4,10 @@ const searchBtn = $(".search-button")
 const inputSearchBox = $(".weather-search")
 const cityList = $(".list-group")
 const todaySection = $("#today")
+const forecastSection = $("#forecast")
 ul = $("<ul>")
+let longitude;
+let latitude;
 
 
 function getStoredData() {
@@ -60,7 +63,7 @@ function getCityLonLat(cityName) {
     $.get(`https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${APIKey}`)
         .then(function (data) {
             if (data.length) {
-                console.log(data)
+
                 if (!tempArr.length) {
                     tempArr.push(cityName)
                     cityArr = tempArr
@@ -78,7 +81,11 @@ function getCityLonLat(cityName) {
                     initScreen(cityName)
                 }
                 inputSearchBox.val("")
+                longitude = data[0].lon
+                latitude = data[0].lat
+
                 getCityWeather(data[0].lon, data[0].lat)
+              
             }
             else {
                 alert("Please enter valid city name")
@@ -91,70 +98,77 @@ function getCityLonLat(cityName) {
 
 /* Function to get weather conditions using longitude and Latitude */
 function getCityWeather(lon, lat) {
-    $.get(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${APIKey}`)
+    $.get(`https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${APIKey}`)
         .then(function (data) {
-            console.log(data)
-            createHeading(data)
+            clearForecastSection()
+            createForecastSection(data, "todayForecast")
         })
-}
-
-function createHeading(data) {
-
-    let h4 = $("<h4>")
-    let todayDate = $("<h4>")
-    let forcastImg = $("<img>")
-    let tempP = $("<p>")
-    let humidityP = $("<p>")
-    let windP = $("<p>")
-    todayDate.addClass("todayDate")
-    h4.addClass("locationName")
-    forcastImg.addClass("forcastImg")
-    tempP.addClass("todayTemp")
-    windP.addClass("todayWind")
-    humidityP.addClass("todayHumidity")
-    if (data) {
-        updateData(data, h4, todayDate, forcastImg, tempP, humidityP, windP)
-    }
-
-
-}
-function updateData(data, h4, todayDate, forcastImg, tempP, humidityP, windP) {
-    let date = moment().format('DD/MM/YYYY')
-    let tempInCelsius = Math.ceil(data.main.temp)
-    let windSpeed = (data.wind.speed * 2.23694).toFixed(1)
-    
-    todayDate.text(`(${date})`)
-
-    h4.text(data.name)
-    todaySection.append(h4)
-    todaySection.append(todayDate)
-
-    forcastImg.attr('src', `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`)
-    todaySection.append(forcastImg)
-
-    tempP.text(`Temp: ${tempInCelsius}\xB0C`)
-    todaySection.append(tempP)
-
-    windP.text(`Wind: ${windSpeed} KPH`)
-    todaySection.append(windP)
-
-    humidityP.text(`Humidity: ${data.main.humidity}%`)
-    todaySection.append(humidityP)
 }
 
 
 function loginPage() {
-    let h4 = $("<h4>")
+
     let tempArr = getStoredData()
-    console.log(tempArr)
+
     getCitySearchHistory()
     if (!tempArr.length) {
+        let h4 = $("<h4>")
         h4.text("Please enter city to search")
         todaySection.append(h4)
     }
     else {
 
+        getCityLonLat(tempArr[0])
+
     }
+    
+}
+function forecastSectionCreation() {
+   
+
+    $.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${APIKey}`)
+        .then(function (data) {   
+            console.log(data, data.list[0], data.list[4], data.list[7])   
+
+            }
+            
+        )
 
 }
 
+
+function createForecastSection(data, position) {
+    let todayDate = $("<h4>")
+    let forcastImg = $("<img>")
+    let tempP = $("<p>")
+    let humidityP = $("<p>")
+    let windP = $("<p>")
+    let date = moment().format('DD/MM/YYYY')
+    forcastImg.attr('src', `https://openweathermap.org/img/wn/${data.weather[0].icon}.png`)
+    todayDate.text(`(${date})`)
+    let tempInCelsius = Math.ceil(data.main.temp)
+    let windSpeed = (data.wind.speed * 2.23694).toFixed(1)
+    tempP.text(`Temp: ${tempInCelsius}\xB0C`)
+    windP.text(`Wind: ${windSpeed} KPH`)
+    humidityP.text(`Humidity: ${data.main.humidity}%`)
+
+
+    if (position == "todayForecast") {
+        let h4 = $("<h4>")
+        h4.addClass("locationName")
+        h4.text(data.name)
+        todaySection.append(h4)
+        todayDate.addClass("todayDate")
+        todaySection.append(todayDate)
+        todaySection.append(tempP)       
+        todaySection.append(windP)
+        todaySection.append(humidityP)     
+
+    }
+}
+
+function clearForecastSection()
+{
+    todaySection.empty()
+    forecastSection.empty()
+}

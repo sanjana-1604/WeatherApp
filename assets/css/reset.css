@@ -31,6 +31,10 @@ border-radius: 5px;
 text-align: center;
 
 }
+#today
+{
+    padding:10px;
+}
 .locationName
 {
     display:inline-block;  
@@ -41,3 +45,18 @@ text-align: center;
     margin:10px;
     text-align:left;
 }
+#forecast
+{
+    display:flex;    
+    justify-content:space-around;
+}
+.forecast5Section
+{
+    background-color: #2D3E50;
+    width:18%;
+    padding:10px;
+    margin:10px;
+    color:white;                         
+}
+
+
