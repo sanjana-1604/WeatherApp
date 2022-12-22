@@ -50,14 +50,12 @@ text-align: center;
 {
     display:flex;    
     justify-content:space-around;
-    gap:0px 100px;
     padding:10px;
 }
 .forecast5Section
 {
-    background-color: #2D3E50;
-    width:18%;
-    padding:10px;
+    background-color: #2D3E50;    
+    padding:20px;
     margin:10px;
     color:white;                         
 }
