@@ -73,9 +73,9 @@ function getCityWeatherData(cityName) {
                 inputSearchBox.val("")
                 longitude = data.coord.lon
                 latitude = data.coord.lat
-                let tempObj = createForecastSection(data, "todayForecast")
-                currentForecast(tempObj)
-               // get5DaysForecastData()
+               createForecastSection(data)
+               forecastSection.empty()
+               get5DaysForecastData()
 
 
             }
@@ -105,19 +105,24 @@ function get5DaysForecastData() {
 
     $.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${APIKey}`)
         .then(function (data) {
-          //  console.log(data, data.list[0], data.list[4], data.list[7])
-            for (var i = 0; i < 5; i++) {
-                for (var j = 0; j < 3; j++) {
-                    forecast5days(createForecastSection(data.list[0], ""))
-                }
-            }
+            console.log(data, data.list[0], data.list[4], data.list[7])
+          var k = 0;
+            for (var i = 0; i < 15; i++) {
+              //  for(var j = 0; j< 3;j++)
+                {
+                    forecast5days(data.list[i])
+                    k++
+                    
+                }          
+                
+            }            
         }
         )
 
 }
 
 //Function to create today's forecast and 5 days forecast sections
-function createForecastSection(data, position) {
+function createForecastSection(data) {
     let todayDate = $("<h4>")
     let forcastImg = $("<img>")
     let tempP = $("<p>")
@@ -134,40 +139,49 @@ function createForecastSection(data, position) {
     humidityP.text(`Humidity: ${data.main.humidity}%`)
 
     todaySection.empty()
-    forecastSection.empty()
-    if (position === "todayForecast") {
+  
+
         let h4 = $("<h4>")
         h4.addClass("locationName")
         h4.text(data.name)
         todaySection.append(h4)
         todayDate.addClass("todayDate")
 
-    }
     
-    return { "date": todayDate, "Img": forcastImg, "temp": tempP, "humidity": humidityP, "wind": windP }
+    todaySection.append(todayDate)
+    todaySection.append(forcastImg) 
+    todaySection.append(tempP)
+    todaySection.append(windP)
+    todaySection.append(humidityP)
 
 }
 
-
-function currentForecast(obj) {
-    todaySection.append(obj.todayDate)
-    todaySection.append(obj.Img)
- 
-    todaySection.append(obj.temp)
-    todaySection.append(obj.wind)
-    todaySection.append(obj.humidity)
-
-}
-
-function forecast5days(obj)
+function forecast5days(data)
 {
     let div = $("<div>")
     div.addClass("forecast5Section")
-    div.append(obj.todayDate)
-    div.append(obj.Img)    
-    div.append(obj.temp)
-    div.append(obj.wind)
-    div.append(obj.humidity)
+    let todayDate = $("<h4>")
+    let forcastImg = $("<img>")
+    let tempP = $("<p>")
+    let humidityP = $("<p>")
+    let windP = $("<p>")
+
+    let date = moment(data.dt_txt.split(" ")[0]).format('DD/MM/YYYY')
+    forcastImg.attr('src', `https://openweathermap.org/img/w/${data.weather[0].icon}.png`)
+    todayDate.text(`${date}`)
+    let tempInCelsius = Math.ceil(data.main.temp)
+    let windSpeed = (data.wind.speed * 2.23694).toFixed(1)
+    tempP.text(`Temp: ${tempInCelsius}\xB0C`)
+    windP.text(`Wind: ${windSpeed} KPH`)
+    humidityP.text(`Humidity: ${data.main.humidity}%`)
+
+   
+    div.append(todayDate)
+    div.append(forcastImg)    
+    div.append(tempP)
+    div.append(windP)
+    div.append(humidityP)
+    
 
 
     forecastSection.append(div)
