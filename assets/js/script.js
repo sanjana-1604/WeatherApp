@@ -160,7 +160,7 @@ function forecast5days(data)
 {
     let div = $("<div>")
     div.addClass("forecast5Section")
-    let todayDate = $("<h4>")
+    let todayDate = $("<h6>")
     let forcastImg = $("<img>")
     let tempP = $("<p>")
     let humidityP = $("<p>")
