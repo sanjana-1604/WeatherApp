@@ -31,6 +31,7 @@ border-radius: 5px;
 text-align: center;
 
 }
+
 #today
 {
     padding:10px;
@@ -49,6 +50,8 @@ text-align: center;
 {
     display:flex;    
     justify-content:space-around;
+    gap:0px 100px;
+    padding:10px;
 }
 .forecast5Section
 {
