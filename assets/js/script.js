@@ -51,8 +51,6 @@ cityList.delegate("li", "click", function (event) {
     getCityWeatherData(cityName)
 })
 
-
-
 /*This function takes city name from input and pass Longitude and Latitude to find weather conditions */
 function getCityWeatherData(cityName) {
 
@@ -79,11 +77,18 @@ function getCityWeatherData(cityName) {
 
 
             }
-            else {
+            else{
+
                 alert("Please enter valid city name")
                 inputSearchBox.val("")
             }
-        })
+        },function(data)
+        {
+            if(data.responseJSON['cod'] === '404')
+             alert("Please enter valid city name")
+                inputSearchBox.val("")
+        }
+        )
 }
 
 //Function to create initial screen
@@ -105,15 +110,15 @@ function get5DaysForecastData() {
 
     $.get(`https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&units=metric&appid=${APIKey}`)
         .then(function (data) {
-            console.log(data, data.list[0], data.list[4], data.list[7])
+         
           var k = 0;
-            for (var i = 0; i < 15; i++) {
-              //  for(var j = 0; j< 3;j++)
-                {
+            for (var i = 0; i < data.cnt; i++) {
+             
+                
                     forecast5days(data.list[i])
                     k++
                     
-                }          
+                        
                 
             }            
         }
@@ -165,7 +170,11 @@ function forecast5days(data)
     let tempP = $("<p>")
     let humidityP = $("<p>")
     let windP = $("<p>")
-
+    let time = (data.dt_txt).split(" ")[1].split(":")[0]
+   
+    if (time === '12')
+    {
+         
     let date = moment(data.dt_txt.split(" ")[0]).format('DD/MM/YYYY')
     forcastImg.attr('src', `https://openweathermap.org/img/w/${data.weather[0].icon}.png`)
     todayDate.text(`${date}`)
@@ -185,6 +194,7 @@ function forecast5days(data)
 
 
     forecastSection.append(div)
+    }
     
 }
 
